@@ -89,7 +89,7 @@ jobs:
             helm delete $RELEASE . -n << pipeline.parameters.namespace >> 
 workflows:
   tests:
-    steps: 
+    jobs: 
       - install-helm-chart:
           filters:
             tags:
