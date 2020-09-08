@@ -33,7 +33,7 @@ jobs:
           root: /tmp
           paths:
             - release
-  test-1-is-up:
+  general-test:
     executor: eks/python
     steps:
       - attach_workspace:
@@ -49,12 +49,12 @@ jobs:
           command: |
             export RELEASE="$(cat /tmp/releases/release)"
             echo "Release=${RELEASE}"
-            helm template $RELEASE tests/is-up -n << pipeline.parameters.namespace >> -f values-<< pipeline.parameters.namespace >>.yaml -f values/<< pipeline.parameters.cluster-name >>/<< pipeline.parameters.namespace >>/test.yaml | kubectl apply -f -
+            helm template $RELEASE tests/<< parameters.test >> -n << pipeline.parameters.namespace >> -f values-<< pipeline.parameters.namespace >>.yaml -f values/<< pipeline.parameters.cluster-name >>/<< pipeline.parameters.namespace >>/test.yaml | kubectl apply -f -
       - run:
           name: verify-test
           command: |
             while true; do
-            export $STATUS=$(kubectl get pods ${RELEASE}-is-up --no-headers -o custom-columns=":status.phase" -n << pipeline.parameters.namespace >>)
+            export $STATUS=$(kubectl get pods ${RELEASE}-<< parameters.test >> --no-headers -o custom-columns=":status.phase" -n << pipeline.parameters.namespace >>)
             echo "STATUS IS => $STATUS"
             if [ "$STATUS" -eq "Running" ]; then
               sleep 2s
@@ -69,7 +69,7 @@ jobs:
             done
       - run:
           name: delete-test
-          command: helm template $RELEASE tests/is-up -n << pipeline.parameters.namespace >> -f values-<< pipeline.parameters.namespace >>.yaml -f values/<< pipeline.parameters.cluster-name >>/<< pipeline.parameters.namespace >>/test.yaml | kubectl delete -f -
+          command: helm template $RELEASE tests/<< parameters.test >> -n << pipeline.parameters.namespace >> -f values-<< pipeline.parameters.namespace >>.yaml -f values/<< pipeline.parameters.cluster-name >>/<< pipeline.parameters.namespace >>/test.yaml | kubectl delete -f -
   delete-helm-chart:
     executor: eks/python
     steps: 
@@ -96,13 +96,16 @@ workflows:
               only: /^build.*/
             branches:
               only: dev
-      - test-1-is-up:
+      - general-test:
+          test: is-up
           requires:
             - install-helm-chart
-      - test-2-internally-available:
+      - general-test:
+          test: internally-available
           requires:
             - install-helm-chart
-      - test-3-externally-available:
+      - general-test:
+          test: externally-available
           requires:
             - install-helm-chart
       - delete-helm-chart-approval:
