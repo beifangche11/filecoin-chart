@@ -35,6 +35,9 @@ jobs:
             - release
   general-test:
     executor: eks/python
+    parameters:
+      test:
+        type: string
     steps:
       - attach_workspace:
           at: /tmp/releases/ 
