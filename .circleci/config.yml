@@ -15,6 +15,7 @@ orbs:
   helm: circleci/helm@1.0.0
 jobs:
   install-helm-chart:
+    executor: aws-eks/python
     steps: 
       - eks/update-kubeconfig-with-authenticator:
           cluster-name: << pipeline.parameters.cluster-name >>
@@ -33,6 +34,7 @@ jobs:
           paths:
             - release
   test-1-is-up:
+    executor: aws-eks/python
     steps:
       - attach_workspace:
           at: /tmp/releases/ 
@@ -69,6 +71,7 @@ jobs:
           name: delete-test
           command: helm template $RELEASE tests/is-up -n << pipeline.parameters.namespace >> -f values-<< pipeline.parameters.namespace >>.yaml -f values/<< pipeline.parameters.cluster-name >>/<< pipeline.parameters.namespace >>/test.yaml | kubectl delete -f -
   delete-helm-chart:
+    executor: aws-eks/python
     steps: 
       - attach_workspace:
           at: /tmp/releases/
