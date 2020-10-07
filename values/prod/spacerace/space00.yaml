@@ -1,5 +1,3 @@
-image:
-  repository: openworklabs/lotus:latest
 ingress:
   lotus:
     annotations: 
@@ -26,6 +24,10 @@ persistence:
           count: 7
     restore:
       enabled: true
-      name: space05-5bv6d
+      name: space02-bxp7w
 IPFS:
   enabled: true
+nodeSelector:
+  enabled: true
+  nodeLabel:
+    lifecycle: Ec2Spot
