@@ -109,6 +109,11 @@ resources:
 persistence:
 # If persistence is set to false no persistent volumes will be created
   enabled: true
+  autoResizer:
+    enabled: true
+    increaseThreshold: 90 # in %
+    increaseStep: 10 # in %
+    cron: "0 0 * * *"
   snapshots:
 # If uploadToIpfs is set to true the internal Lotus snapshot will be created and uploaded to the IPFS system. Note that IPFS must be nenabled in that case
     uploadToIpfs:
@@ -139,7 +144,7 @@ persistence:
       #name: snapshot-blah
 # For each of the deployed services one can specify the disk size, custom disk type and access mode.
   lotus:
-    size: "200Gi"
+    size: "450Gi"
     accessModes:
       - ReadWriteOnce
   ipfs:
@@ -151,6 +156,7 @@ persistence:
     accessModes:
       - ReadWriteOnce
 
+# Defines whether should be deployed Lotus node.
 Lotus:
   enabled: true
 
