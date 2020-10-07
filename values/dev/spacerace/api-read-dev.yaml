@@ -1,4 +1,4 @@
-apiservice:
+ApiService:
   enabled: true
 secretVolume:
   enabled: true
@@ -11,7 +11,7 @@ persistence:
         cron: "0 11 * * *"
     restore:
       enabled: true
-      name: space02-dev-tzq4x
+      name: api-read-dev-ttkr5
 nodeSelector:
   enabled: true
   nodeLabel:
